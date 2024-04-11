@@ -10,7 +10,9 @@
 
    // Ruta crear
 app.get("/crear", async (req, res) => {
-    const { archivo, contenido } = req.query
+    //const { archivo, contenido } = req.query
+    const archivo=req.query.archivo
+    const contenido=req.query.contenido
     try {
         await fs.writeFile(archivo, contenido)
         res.send("Archivo creado con éxito!")
@@ -21,13 +23,20 @@ app.get("/crear", async (req, res) => {
 // Ruta leer
 app.get("/leer", async (req, res) => {
     const { archivo } = req.query
+    console.log("valor de parametro archivo : ",archivo);
+    console.log("tipo de dato de parametro archivo : ",typeof archivo);
     try {
         const data = await fs.readFile(archivo)
         //res.send(data)
         res.sendFile(__dirname + "/" + archivo)
     }
     catch (error) {
-        res.status(500).send("Algo salió mal...")
+        if (archivo==""){
+            res.status(500).send("Algo salió mal... no se recibio archivo")
+        } else {
+            res.status(500).send("Algo salió mal... no existe el archivo: " + archivo)
+        }
+        
     }
 })
 // Ruta renombrar
