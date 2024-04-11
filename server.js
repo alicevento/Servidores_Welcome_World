@@ -41,21 +41,27 @@ app.get("/leer", async (req, res) => {
 })
 // Ruta renombrar
 app.get("/renombrar", async (req, res) => {
-    const {archivo, nuevoNombre} = req.query
+    const { nombre, nuevoNombre } = req.query; // Ahora se usa req.body en lugar de req.query
     try {
-        await fs.rename(archivo, nuevoNombre)
-        res.send(`Archivo ${archivo} renombrado por ${nuevoNombre}`)
+        await fs.rename(nombre, nuevoNombre);
+        res.send(`Archivo ${nombre} renombrado por ${nuevoNombre}`);
     } catch (error) {
-        res.status(500).send("Algo salió mal...")
+        res.status(500).send("Algo salió mal...");
     }
-})
+});
 // Ruta eliminar       
+
 app.get("/eliminar", async (req, res) => {
-    const { archivo } = req.query
-    try {
-        await fs.unlink(archivo)
-        res.send(`Archivo ${archivo} eliminado con éxito`)
-    } catch (error) {
-        res.status(500).send("Algo salió mal...")
+    const { archivo } = req.query;
+    if (!archivo) {
+        return res.status(400).send("Nombre de archivo no proporcionado");
     }
-})
+    try {
+        // Add path validation or restriction here to avoid deletion of sensitive files
+        await fs.unlink(archivo);
+        res.send(`Archivo ${archivo} eliminado con éxito`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Algo salió mal...");
+    }
+});
